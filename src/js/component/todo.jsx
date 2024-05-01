@@ -7,7 +7,7 @@ const Todo = () => {
 	const [inputValue, setInputValue] = useState('');
 	const [listaTareas, setListaTareas] = useState([])
 
-	useState(()=> {
+	useEffect(()=> {
 		fetch("https://playground.4geeks.com/todo/users/Marck")
 		.then((resp)=> {
 			if(!resp.ok){
@@ -62,10 +62,26 @@ const Todo = () => {
 		}
 	}
 
+	const handleDelete =(id)=>{
+		fetch(`https://playground.4geeks.com/todo/todos/${id}`, {
+			method: "DELETE"
+		})
+		.then((resp)=>{
+			if(!resp.ok){
+				throw new Error("No se pudo eliminar la tarea")
+			}
+			const updatedTasks = listaTareas.filter(tarea => tarea.id !== id)
+			setListaTareas(updatedTasks)
+		})
+		.catch((error)=>{
+			console.error(error)
+		})
+	}
+
 
 	return (
-		<div className="text-center">
-			<h1>4to intento</h1>
+		<div className="text-center " style={{"background": "black", "height": ""}}>
+			<h1>ToDo con Fetch</h1>
 			<div> 
 				<input 
 				type="text"
@@ -77,8 +93,9 @@ const Todo = () => {
 			<p>Nueva tarea: {inputValue}</p>
 			<ul>
 				{listaTareas.map((tarea, index)=> (
-						<li key={index}>
+						<li className="text-left m-4" key={index}>
 							{tarea.label}
+							<button className="btn btn-danger" onClick={()=> handleDelete(tarea.id)}>Eliminar</button>
 						</li>
 					)
 				)}
